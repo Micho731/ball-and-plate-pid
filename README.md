@@ -151,4 +151,4 @@ The mechanical design (3D-printed parts) and the original concept come from [nic
 
 ## Author
 
-**Michel Salame** — wrote all of the control software (vision, calibration, servo mixing, PID, GUI and test tools), designed the plate, and did the modelling and analysis. [LinkedIn](https://www.linkedin.com/in/michel-salame)
+**Michel Salame** — [LinkedIn](https://www.linkedin.com/in/michel-salame)
