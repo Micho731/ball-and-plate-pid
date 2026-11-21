@@ -2,11 +2,18 @@
 
 A Raspberry Pi platform that keeps a ping-pong ball balanced on a tilting plate. It uses a webcam, OpenCV ball tracking and PID control of three servos.
 
-**Built:** January 2026 · Control Systems lab project · Documented 2026
+**Built:** January 2026 · Control Systems lab project
 
 ![Ball held on the plate during the demo](media/demo.gif)
 
-In a 61-second continuous run, the ball stayed on the plate the whole time while the plate kept correcting ([full video](media/demo.mp4)).
+## Results
+
+| Metric | Result |
+| --- | --- |
+| Continuous balance in the demo | 61 s, ball never left the plate ([full video](media/demo.mp4)) |
+| Control loop | About 10 Hz, camera to servos |
+| Final tuning | PD: Kp 0.25, Kd 0.08, Ki 0 |
+| Model check | Refined plant model predicts a stable but lightly damped loop (24° phase margin), matching the demo |
 
 ## How it works
 
@@ -126,12 +133,22 @@ What this shows:
 
 The hardware gains are in degrees per pixel, so they are not directly comparable to the model gains.
 
-## Problems and fixes
+## Challenges and fixes
 
 - **The model didn't match the hardware.** PID was tuned on the real rig through the live sliders.
 - **The plate oscillated near the edges.** Servo travel was clamped tightly and the plate poses were calibrated.
 - **The behaviour was hard to see.** Separate test and calibration tools were written for each component.
 
+## Limitations and next steps
+
+- The 10 Hz camera loop limits damping: the ball stays on the plate but doesn't settle at the centre. A faster camera pipeline (30 Hz or more) is the first upgrade.
+- Gains were tuned by hand on the rig; a model-based tuning step using the refined plant model is next.
+- The ball is found by colour, so lighting changes need the HSV range re-tuned.
+
 ## Credits
 
 The mechanical design (3D-printed parts) and the original concept come from [nicohmje/PID-ballonplate](https://github.com/nicohmje/PID-ballonplate). Get the STL files from that repository. The control software in this repo was rewritten from scratch: calibration, detection, servo mixing, PID and GUI.
+
+## Author
+
+**Michel Salame** — wrote all of the control software (vision, calibration, servo mixing, PID, GUI and test tools), designed the plate, and did the modelling and analysis. [LinkedIn](https://www.linkedin.com/in/michel-salame)
