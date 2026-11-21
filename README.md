@@ -54,13 +54,22 @@ flowchart LR
 
 ## Hardware
 
+![System overview: overhead USB webcam on a stand, 3D-printed plate, cardan joints, arms and links, three MG996R servos in the base](media/system_overview.jpg)
+
+*System layout (concept render).*
+
+![The real rig with its parts labelled: custom plate, cardan joints, 3D-printed arms and links, three MG996R servos, ping-pong ball](media/hardware_annotated.jpg)
+
+*The actual build.*
+
 | Part | Notes |
 | --- | --- |
 | Raspberry Pi 4 | Runs vision, control and GUI |
 | USB webcam | Mounted above the plate |
 | PCA9685 16-channel servo driver | Driven with Adafruit ServoKit |
 | 3x MG996R servos | Triangular layout |
-| 3D-printed arms + cardan joints | Plate linkage |
+| 3D-printed arms + cardan joints | Plate linkage (original design) |
+| Custom plate | 250 × 250 × 5 mm, designed and 3D-printed in PLA |
 | Bench power supply | Separate supply for the servos |
 
 ![Wiring: power supply, Raspberry Pi, camera, PCA9685 servo driver and three servos](media/wiring.png)
@@ -98,25 +107,25 @@ The ball dynamics were derived with a Lagrangian and linearized at zero tilt. Be
 
 ![Transfer function and dynamic equation of the ball on the plate](media/transfer_function.png)
 
-Both axes were simulated in Simulink with a step setpoint, plus a 3D animation of the ball on the plate. Parameters: ball mass 2.7 g, ball radius 20 mm, ball inertia 7.2 × 10⁻⁷ kg·m² (thin shell), motor arm 50 mm, plate 300 mm.
+Both axes were simulated in Simulink with a step setpoint, plus a 3D animation of the ball on the plate. Parameters: ball mass 2.7 g, ball radius 20 mm, ball inertia 7.2 × 10⁻⁷ kg·m² (thin shell), motor arm 50 mm, plate 250 mm. The slide shown below uses an earlier 300 mm estimate; the analysis below uses the real 250 mm.
 
 ![Simulink model of the x and y loops with 3D ball animation](media/simulink.png)
 
 ## Engineering notes
 
-**Two plant models.** The first model treats the ball as solid and the plate tilt as the input: G(s) = (5/7)g / s² ≈ 7.0 / s². This is the version in the MATLAB/Simulink files. The refined model (transfer function above) accounts for the hollow ping-pong ball (J = ⅔mr²) and the servo-arm lever (d/L = 50/300 mm). From servo angle to ball position it gives G(s) ≈ 0.98 / s², about 7× less gain.
+**Two plant models.** The first model treats the ball as solid and the plate tilt as the input: G(s) = (5/7)g / s² ≈ 7.0 / s². This is the version in the MATLAB/Simulink files. The refined model (transfer function above) accounts for the hollow ping-pong ball (J = ⅔mr²) and the servo-arm lever (d/L = 50/250 mm). From servo angle to ball position it gives G(s) ≈ 1.18 / s², about 6× less gain.
 
 Here is the same PID (Kp 2.5, Ki 0.1, Kd 1.2) on each model, from `analysis/model_check.py`:
 
 | Plant model | Overshoot | Settling | Phase margin | 10 Hz loop + 1-frame camera delay |
 | --- | --- | --- | --- | --- |
 | Solid ball, plate tilt (7.0/s²) | 14% | 1.3 s | 76° | Unstable (−23°) |
-| Hollow ball, servo arm (0.98/s²) | 40% | 6.8 s | 40° | Stable, 23° |
+| Hollow ball, servo arm (1.18/s²) | 37% | 5.9 s | 43° | Stable, 24° |
 
 What this shows:
 - **Model detail changes the design.** The simpler model makes the gains look excellent, but it would go unstable at the real loop rate.
 - **PD is enough.** The integral term barely acts (its closed-loop pole sits at −0.04), so the hardware ran with Ki = 0.
-- **The camera loop is the bottleneck.** At 10 Hz with a frame of delay, the phase margin drops to about 23°. That matches the demo: the ball stays on the plate but keeps moving instead of settling at the centre. A faster camera loop (30 Hz or more) is the first upgrade.
+- **The camera loop is the bottleneck.** At 10 Hz with a frame of delay, the phase margin drops to about 24°. That matches the demo: the ball stays on the plate but keeps moving instead of settling at the centre. A faster camera loop (30 Hz or more) is the first upgrade.
 
 The hardware gains are in degrees per pixel, so they are not directly comparable to the model gains.
 
