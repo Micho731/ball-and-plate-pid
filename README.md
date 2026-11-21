@@ -56,11 +56,8 @@ flowchart LR
 
 ![System overview: overhead USB webcam on a stand, 3D-printed plate, cardan joints, arms and links, three MG996R servos in the base](media/system_overview.jpg)
 
-*System layout (concept render).*
+*System layout*
 
-![The real rig with its parts labelled: custom plate, cardan joints, 3D-printed arms and links, three MG996R servos, ping-pong ball](media/hardware_annotated.jpg)
-
-*The actual build.*
 
 | Part | Notes |
 | --- | --- |
