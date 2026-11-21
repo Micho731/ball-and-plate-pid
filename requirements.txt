@@ -1,0 +1,4 @@
+numpy
+opencv-python
+adafruit-circuitpython-servokit
+# tkinter ships with Python (on Raspberry Pi OS: sudo apt install python3-tk)
